@@ -111,10 +111,10 @@ inn-web-paginas-de-exemplo/Paginas/wStart.prw
 |----------------------|-----------|
 | **wIndex.prw**       | Página de entrada. Valida login e direciona chamadas. |
 | **ClsINNWeb.prw**    | Classe principal de geração de HTML. |
-| **INNAnexo.prw**     | Interface de anexos via `U_INNAnexo(cTipo, cDoc)`. |
+| **INNAnexo.prw**     | Interface de anexos via U_INNAnexo(cTipo, cDoc). |
 | **INNOpen.prw**      | Abre uma página INN‑Web diretamente no Protheus. |
 | **INNWebAnexo.prw**  | Classe de manipulação de arquivos anexos. |
-| **INNWebBrowse.prw** | Geração de browser com `SetTabela()` e `SetRec()`. |
+| **INNWebBrowse.prw** | Geração de browser partindo de uma tabela padrão. |
 | **INNWebCls.prw**    | Limpeza de diretórios temporários. |
 | **INNWebImgPod.prw** | Exibição de imagens de produto. |
 | **INNWebParam.prw**  | Geração de parâmetros para filtros. |
@@ -128,11 +128,9 @@ inn-web-paginas-de-exemplo/Paginas/wStart.prw
 
 - **Crie um fonte `Criadb.prw`** se deseja gerar tabelas dinamicamente. Ele será chamado automaticamente.
 - **Token de autenticação (`IN_TOKEN`)**: permite abrir páginas INN‑Web diretamente no Protheus sem login manual.
+- **RPCSetEnv**: no wIndex o sistema monta o ambiente com o grupo e empresa que o usuario escolher, mas a principio ele abre a primeira filial que o usuario tem acesso
+- **RPCSetType(3)**: Usado como legado para abrir o ambiente rapidamente sem tela
 
-```advpl
-RPCSetEnv(HttpSession->WsEmp, HttpSession->WsFil, , , , "INN web", , , ,)
-RPCSetType(3)
-```
 
 ---
 
@@ -149,15 +147,32 @@ O repositório inclui **12 exemplos de páginas** reais:
 
 ---
 
+## 💻 Interface Web do INN‑Web
+
+Veja abaixo um exemplo real da aplicação rodando no navegador:
+
+<img src="screenshots/login.png" width="700"/>
+<img src="screenshots/DashBoard.png" width="700"/>
+<img src="screenshots/browser.png" width="700"/>
+<img src="screenshots/graficos.png" width="700"/>
+<img src="screenshots/parametros.png" width="700"/>
+<img src="screenshots/tabelas.png" width="700"/>
+<img src="screenshots/tree.png" width="700"/>
+
+A interface é limpa, responsiva e integrada ao Protheus.
+
+---
+
 ## 📄 Licença
 
 Projeto licenciado sob a [GNU GPL versão 2.0](LICENSE).  
 Você pode redistribuí-lo e/ou modificá-lo nos termos da GNU General Public License conforme publicada pela Free Software Foundation, versão 2.
 
-> Este software é distribuído na esperança de que seja útil, mas **sem qualquer garantia**; sem mesmo a garantia implícita de **comercialização ou adequação a um propósito específico**.
-> ⚠️ **Atenção:** A utilização deste projeto implica em concordância com os termos da licença.  
-> O autor e os distribuidores **não se responsabilizam por quaisquer impactos** causados ao ambiente onde for utilizado, tampouco por **prejuízos financeiros, operacionais ou de qualquer outra natureza** decorrentes do seu uso.
+Este software é distribuído na esperança de que seja útil, mas **sem qualquer garantia**; sem mesmo a garantia implícita de **comercialização ou adequação a um propósito específico**.
 
+⚠️ **Atenção:** A utilização deste projeto implica em concordância com os termos da licença.  
+
+O autor e os distribuidores **não se responsabilizam por quaisquer impactos** causados ao ambiente onde for utilizado, tampouco por **prejuízos financeiros, operacionais ou de qualquer outra natureza** decorrentes do seu uso.
 
 ---
 
