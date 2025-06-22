@@ -1,5 +1,4 @@
 #include "protheus.ch"
-#INCLUDE "MYLIB.CH"
 #include "tryexception.ch"
 #include "msobject.ch"
 #INCLUDE "parmtype.CH"

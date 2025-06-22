@@ -40,8 +40,8 @@ User Function wIndex()
 			endif
 			
 			//RPCClearEnv()
-			RPCSetType(3)// 3 - Excel Nao come licenca
-			RPCSetEnv(HttpSession->WsEmp,HttpSession->WsFil,,,,"INN web",,,,,)//FILIAL_CHUMBADA
+			RPCSetType(3)
+			RPCSetEnv(HttpSession->WsEmp,HttpSession->WsFil,,,,"INN web",,,,,)
 			RPCSetEmpFil( HttpSession->WsEmp , HttpSession->WsFil )
 
 			IF Select("SM0") == 0 
@@ -176,8 +176,6 @@ User Function wIndex()
 		END TRY
 		
 	WEB EXTENDED END
-
-	//FreeObj(oError)
 	
 Return(cHTML)
 
