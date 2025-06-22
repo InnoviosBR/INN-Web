@@ -6,6 +6,22 @@ INN‑Web é uma solução desenvolvida em ADVPL que permite a criação de inte
 
 ---
 
+## 💻 Interface do INN‑Web
+
+Veja abaixo um exemplo real da aplicação rodando no navegador:
+
+<img src="screenshots/login.png" width="700"/>
+<img src="screenshots/DashBoard.png" width="700"/>
+<img src="screenshots/browser.png" width="700"/>
+<img src="screenshots/graficos.png" width="700"/>
+<img src="screenshots/parametros.png" width="700"/>
+<img src="screenshots/tabelas.png" width="700"/>
+<img src="screenshots/tree.png" width="700"/>
+
+A interface é limpa, responsiva e integrada ao Protheus.
+
+---
+
 ## 🚀 Instalação
 
 ### 1. Clonar o repositório
@@ -145,21 +161,6 @@ O repositório inclui **12 exemplos de páginas** reais:
 - Tabelas dinâmicas
 - Filtros
 
----
-
-## 💻 Interface Web do INN‑Web
-
-Veja abaixo um exemplo real da aplicação rodando no navegador:
-
-<img src="screenshots/login.png" width="700"/>
-<img src="screenshots/DashBoard.png" width="700"/>
-<img src="screenshots/browser.png" width="700"/>
-<img src="screenshots/graficos.png" width="700"/>
-<img src="screenshots/parametros.png" width="700"/>
-<img src="screenshots/tabelas.png" width="700"/>
-<img src="screenshots/tree.png" width="700"/>
-
-A interface é limpa, responsiva e integrada ao Protheus.
 
 ---
 
