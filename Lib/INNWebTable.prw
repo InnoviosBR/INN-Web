@@ -455,9 +455,15 @@ METHOD GetJson() Class INNWebTable
 		aadd(aJSFoot,"	var api = this.api();")			
 		For nY := 1 To Len(::aHead)
 			if ::aHead[nY][2] == "N" .and. ::aHead[nY][5]
-				cVarHed := "cpo"+StrZero(nY,3)
-				aadd(aJSFoot,"	"+cVarHed+" = api.column("+cValToChar(nY-1)+").data().reduce(function (a, b) {return intVal(a) + intVal(b)}, 0);")
-				aadd(aJSFoot,"	$(api.column("+cValToChar(nY-1)+").footer()).html( formatNumber.format("+cVarHed+") );")
+				//cVarHed := "cpo"+StrZero(nY,3)
+				//aadd(aJSFoot,"	"+cVarHed+" = api.column("+cValToChar(nY-1)+").data().reduce(function (a, b) {return intVal(a) + intVal(b)}, 0);")
+				//aadd(aJSFoot,"	$(api.column("+cValToChar(nY-1)+").footer()).html( formatNumber.format("+cVarHed+") );")
+				//aadd(aJSFoot,"  console.log("+cVarHed+");")
+				xValor := 0
+				For nLinha := 1 To Len(::aCols)
+					xValor += ::aCols[nLinha][nY]
+				Next nLinha
+				aadd(aJSFoot,"	$(api.column("+cValToChar(nY-1)+").footer()).html('"+Transform(xValor,"@E 999,999,999,999.999")+"');")
 			elseif !Empty(::aFoot[nY])
 				aadd(aJSFoot,"	$(api.column("+cValToChar(nY-1)+").footer()).html('"+::aFoot[nY]+"');")
 			endif

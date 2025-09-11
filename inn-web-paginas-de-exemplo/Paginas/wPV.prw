@@ -18,11 +18,11 @@ User Function wPV(oINNWeb)
 		oINNWebBrowse:SetRec( SC5->(Recno()) )
 
 		oTableSC6 := INNWebTable():New( oINNWeb )
-		oTableSC6:xBrowse( "SC6",1, " SC6->C6_NUM == '"+SC5->C5_NUM+"' .AND. SC6->C6_FILIAL == '"+SC5->C5_FILIAL+"' ")
+		oTableSC6:SimpleX3Table( "SC6",1, " SC6->C6_NUM == '"+SC5->C5_NUM+"' .AND. SC6->C6_FILIAL == '"+SC5->C5_FILIAL+"' ")
 		oTableSC6:Setlength(.F.)
 
 		oTableSD2 := INNWebTable():New( oINNWeb )
-		oTableSD2:xBrowse( "SD2",1, " SD2->D2_PEDIDO == '"+SC5->C5_NUM+"' .AND. SD2->D2_FILIAL == '"+SC5->C5_FILIAL+"' ")
+		oTableSD2:SimpleX3Table( "SD2",1, " SD2->D2_PEDIDO == '"+SC5->C5_NUM+"' .AND. SD2->D2_FILIAL == '"+SC5->C5_FILIAL+"' ")
 		oTableSD2:Setlength(.F.)
 
 		oINNWeb:SetTitNot("Dados detalhados do Pedido de Venda")

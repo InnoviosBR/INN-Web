@@ -52,16 +52,16 @@ Static Function fPesquisa(oINNWeb)
 		oINNWebTable:AddHead({"Sequência"			,"C",""})
 		oINNWebTable:AddHead({"Seq pai"				,"C",""})
 		oINNWebTable:AddHead({"Emissão"				,"D",""})
-		oINNWebTable:AddHead({"Previsao Ini"		,"D",""})
+		oINNWebTable:AddHead({"Previsao Inicial"	,"D",""})
 		oINNWebTable:AddHead({"Previsao Entrega"	,"D",""})		
 		oINNWebTable:AddHead({"Data Fim"			,"D",""})
 		oINNWebTable:AddHead({"Produto"				,"C",""})
 		oINNWebTable:AddHead({"Descrição"			,"C",""})
 		oINNWebTable:AddHead({"Almoxarifado"		,"C",""})
 		oINNWebTable:AddHead({"Quantidade"			,"N","@E 99,999,999,999.999"})
-		oINNWebTable:AddHead({"Quant. Entregue"		,"C","@E 99,999,999,999.999"})
+		oINNWebTable:AddHead({"Quant. Entregue"		,"N","@E 99,999,999,999.999"})
 		oINNWebTable:AddHead({"Obs"					,"C",""})
-		oINNWebTable:AddHead({"Status"				,""})
+		oINNWebTable:AddHead({"Status"				,"C",""})
 		oINNWebTable:AddHead({"Custo"				,"N","@E 99,999,999,999.99"})
 
 		if select("TMP") <> 0
@@ -182,11 +182,15 @@ Static Function fDetalhe(oINNWeb,xID)
 	oINNWebBrowse:SetRec( xID )
 
 	oTableSD4 := INNWebTable():New( oINNWeb )
-	oTableSD4:xBrowse( "SD4" , 1 , " SD4->D4_FILIAL == '"+SC2->C2_FILIAL+"' .AND. Alltrim(SD4->D4_OP) == '"+SC2->C2_NUM+SC2->C2_ITEM+SC2->C2_SEQUEN+"' " )
+	oTableSD4:SimpleX3Table( "SD4" , 1 , " SD4->D4_FILIAL == '"+SC2->C2_FILIAL+"' .AND. Alltrim(SD4->D4_OP) == '"+SC2->C2_NUM+SC2->C2_ITEM+SC2->C2_SEQUEN+"' " )
 	oTableSD4:Setlength(.F.)
 
 	oTableSD3 := INNWebTable():New( oINNWeb )
-	oTableSD3:xBrowse( "SD3" , 1 , " SD3->D3_FILIAL == '"+SC2->C2_FILIAL+"' .AND. Alltrim(SD3->D3_OP) == '"+SC2->C2_NUM+SC2->C2_ITEM+SC2->C2_SEQUEN+"' " )
+	oTableSD3:SimpleX3Table( "SD3" , 1 , " LEFT(SD3->D3_CF,2) == 'PR' .AND. SD3->D3_FILIAL == '"+SC2->C2_FILIAL+"' .AND. Alltrim(SD3->D3_OP) == '"+SC2->C2_NUM+SC2->C2_ITEM+SC2->C2_SEQUEN+"' " )
+	oTableSD3:Setlength(.F.)
+
+	oTableSD3 := INNWebTable():New( oINNWeb )
+	oTableSD3:SimpleX3Table( "SD3" , 1 , " LEFT(SD3->D3_CF,2) == 'RE' .AND. SD3->D3_FILIAL == '"+SC2->C2_FILIAL+"' .AND. Alltrim(SD3->D3_OP) == '"+SC2->C2_NUM+SC2->C2_ITEM+SC2->C2_SEQUEN+"' " )
 	oTableSD3:Setlength(.F.)
 
 Return

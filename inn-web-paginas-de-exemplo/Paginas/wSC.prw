@@ -10,7 +10,7 @@ User Function wSC(oINNWeb)
 
 	if !Empty(xID)
 		oINNWebTable := INNWebTable():New( oINNWeb )
-		oINNWebTable:xBrowse( "SC1",1, " SC1->C1_FILIAL == '"+xFilial("SC1")+"' .AND. SC1->C1_NUM == '"+xID+"' " )
+		oINNWebTable:SimpleX3Table( "SC1",1, " SC1->C1_FILIAL == '"+xFilial("SC1")+"' .AND. SC1->C1_NUM == '"+xID+"' " )
 		oINNWebTable:SetSimple()
 	else
 		fPesquisa(@oINNWeb)

@@ -22,7 +22,7 @@ Return(.T.)
 
 Static Function fPesquisa(oINNWeb)
 
-	Local nY
+	Local nY,nI
 	Local _cQuery	:= ""
 	
 	Local aDescOr 	:= {}
@@ -35,6 +35,7 @@ Static Function fPesquisa(oINNWeb)
 	Local cForne	:= iif(Valtype(HttpGet->Forne) == "C" .and. !empty(HttpGet->Forne),HttpGet->Forne,"")
 	Local cLoja		:= iif(Valtype(HttpGet->Loja) == "C" .and. !empty(HttpGet->Loja),HttpGet->Loja,"")
 	Local cTES		:= iif(Valtype(HttpGet->tes) == "C" .and. !empty(HttpGet->tes),HttpGet->tes,"")
+	Local cTipo		:= iif(Valtype(HttpGet->tipo) == "C" .and. !empty(HttpGet->tipo),HttpGet->tipo,"")
 	Local cCFOP		:= iif(Valtype(HttpGet->cfop) == "C" .and. !empty(HttpGet->cfop),HttpGet->cfop,"")
 	Local cPedido	:= iif(Valtype(HttpGet->pedido) == "C" .and. !empty(HttpGet->pedido),HttpGet->pedido,"")
 	Local dInicio	:= cTod(iif(Valtype(HttpGet->inicio) == "C" .and. !empty(HttpGet->inicio),HttpGet->inicio,""))
@@ -71,7 +72,22 @@ Static Function fPesquisa(oINNWeb)
 		next
 	endif
 
+	aTemp   := StrTokArr(cTipo,",")
+	cTipo   := ""
+	for nI := 1 to len(aTemp)
+		cTipo += iif(!Empty(cTipo),",","")
+		cTipo += "'" +  Alltrim(aTemp[nI]) + "'"
+	next
+
 	oINNWebParam := INNWebParam():New( oINNWeb )
+	oINNWebParam:addComboMultiple({'tipo','Tipo NF'			, cTipo,;
+																		{{"N","NF Normal"},;
+																		{"C","Complemento"},;
+																		{"D","Devolução"},;
+																		{"I","NF Compl. ICMS"},;
+																		{"P","NF Compl. IPI"},;
+																		{"B","NF Beneficiamento"}},.F.} )
+
 	oINNWebParam:addText( {'doc'		,'Documento'		, 9,cDod	,.F.} )
 	oINNWebParam:addText( {'serie'		,'Serie'			, 3,cSerie	,.F.} )
 	oINNWebParam:addText( {'produto'	,'Produto'			,15,cProd	,.F.} )
@@ -93,9 +109,9 @@ Static Function fPesquisa(oINNWeb)
 		oINNWebTable := INNWebTable():New( oINNWeb )
 		oINNWebTable:AddHead({"Documento"		,"C","",.T.})
 		oINNWebTable:AddHead({"Serie"			,"C",""})
-		oINNWebTable:AddHead({"Item"			,"C","",.T.})
+		oINNWebTable:AddHead({"Item"			,"C",""})
 		oINNWebTable:AddHead({"Tipo"			,"C",""})
-		oINNWebTable:AddHead({"Emissão"			,"D","",.T.})
+		oINNWebTable:AddHead({"Emissão"			,"D",""})
 		oINNWebTable:AddHead({"Fornecedor"		,"C",""})
 		oINNWebTable:AddHead({"Loja"			,"C",""})
 		oINNWebTable:AddHead({"Nome"			,"C",""})
@@ -103,10 +119,10 @@ Static Function fPesquisa(oINNWeb)
 		oINNWebTable:AddHead({"Descrição"		,"C",""})
 		oINNWebTable:AddHead({"Tipo"			,"C",""})
 		oINNWebTable:AddHead({"Almox"			,"C",""})
-		oINNWebTable:AddHead({"Quantidade"		,"N","@E 99,999,999,999.999",.T.})
-		oINNWebTable:AddHead({"Vlr Unit"		,"N","@E 99,999,999,999.99",.T.})
-		oINNWebTable:AddHead({"Vlr Total"		,"N","@E 99,999,999,999.99",.T.})
-		oINNWebTable:AddHead({"Custo"			,"N","@E 99,999,999,999.99",.T.})
+		oINNWebTable:AddHead({"Quantidade"		,"N",PesqPict("SD1","D1_QUANT"),,.T.})
+		oINNWebTable:AddHead({"Vlr Unit"		,"N",PesqPict("SD1","D1_VUNIT")})
+		oINNWebTable:AddHead({"Vlr Total"		,"N",PesqPict("SD1","D1_TOTAL"),,.T.})
+		oINNWebTable:AddHead({"Custo"			,"N",PesqPict("SD1","D1_CUSTO"),,.T.})
 		oINNWebTable:AddHead({"Pedido"			,"C","",.T.})
 		oINNWebTable:AddHead({"Item Ped"		,"C",""})
 		oINNWebTable:AddHead({"TES"				,"C",""})
@@ -120,6 +136,9 @@ Static Function fPesquisa(oINNWeb)
 		endif
 
 		_cQuery := ""
+		if !Empty(cTipo)
+			_cQuery += " AND F1_TIPO = '"+Alltrim(cTipo)+"' "
+		endif 
 		if !Empty(cDod)
 			_cQuery += " AND F1_DOC LIKE '%"+Alltrim(cDod)+"' "
 		endif 
@@ -157,7 +176,7 @@ Static Function fPesquisa(oINNWeb)
 			_cQuery += " AND F1_FILIAL + F1_DOC + F1_SERIE + F1_FORNECE + F1_LOJA IN "
 			_cQuery += "   ( SELECT DISTINCT FT_FILIAL + FT_NFISCAL + FT_SERIE + FT_CLIEFOR + FT_LOJA FROM "+RetSqlName("SFT")+" SFT "
 			_cQuery += " 	 WHERE FT_FILIAL = '"+xFilial("SFT")+"' "
-			_cQuery += " 	   AND %notDel% "
+			_cQuery += " 	   AND D_E_L_E_T_= ' ' "
 			if !Empty(dFTInicio)
 				_cQuery += " AND FT_ENTRADA >= '"+dTos(dFTInicio)+"' "
 			endif
@@ -170,35 +189,25 @@ Static Function fPesquisa(oINNWeb)
 		if !Empty(cCC)
 			_cQuery += " AND (F1_FILIAL+F1_DOC+F1_SERIE+F1_FORNECE+F1_LOJA IN "
 			_cQuery += " (SELECT DE_FILIAL+DE_DOC+DE_SERIE+DE_FORNECE+DE_LOJA FROM "+RetSqlName("SDE")+" SDE "
-			_cQuery += "   WHERE DE_FILIAL = '"+xFilial("SDE")+"' AND DE_CC = '"+cCC+"' AND %notDel% ) OR D1_CC = '"+cCC+"') "
+			_cQuery += "   WHERE DE_FILIAL = '"+xFilial("SDE")+"' AND DE_CC = '"+cCC+"' AND D_E_L_E_T_= ' ' ) OR D1_CC = '"+cCC+"') "
 		endif
 		
 		IF Len(aDescOr) > 0 
-			_cQuery += " AND (( " 
+			_cQuery += " AND ( " 
 			for nY := 1 To len(aDescOr)
 				_cQuery += IIF(nY > 1," OR ","")
 				_cQuery += " UPPER(B1_DESC) LIKE '%"+aDescOr[nY]+"%' "
 			next
-			_cQuery += " ) OR ( " 
-			for nY := 1 To len(aDescOr)
-				_cQuery += IIF(nY > 1," OR ","")
-				_cQuery += " UPPER(B1__DESCII) LIKE '%"+aDescOr[nY]+"%' "
-			next
-			_cQuery += " )) "
+			_cQuery += " ) "
 		ENDIF
 		
 		IF Len(aDescAnd) > 0 
-			_cQuery += " AND (( " 
+			_cQuery += " AND ( " 
 			for nY := 1 To len(aDescAnd)
 				_cQuery += IIF(nY > 1," AND ","")
 				_cQuery += " UPPER(B1_DESC) LIKE '%"+aDescAnd[nY]+"%' "
 			next
-			_cQuery += " ) OR ( " 
-			for nY := 1 To len(aDescAnd)
-				_cQuery += IIF(nY > 1," AND ","")
-				_cQuery += " UPPER(B1__DESCII) LIKE '%"+aDescAnd[nY]+"%' "
-			next
-			_cQuery += " )) "
+			_cQuery += " ) "
 		ENDIF
 		_cQuery := '%'+_cQuery+'%'
 
@@ -288,27 +297,27 @@ Static Function fDetalhe(oINNWeb,xID)
 	oINNWebBrowse:SetRec( xID )
 
 	oTableSD1 := INNWebTable():New( oINNWeb )
-	oTableSD1:xBrowse( "SD1",1, " SD1->D1_FILIAL == '"+SF1->F1_FILIAL+"' .AND. SD1->D1_DOC == '"+SF1->F1_DOC+"' .AND. SD1->D1_SERIE == '"+SF1->F1_SERIE+"' .AND. SD1->D1_FORNECE == '"+SF1->F1_FORNECE+"' .AND. SD1->D1_LOJA == '"+SF1->F1_LOJA+"' " )
+	oTableSD1:SimpleX3Table( "SD1",1, " SD1->D1_FILIAL == '"+SF1->F1_FILIAL+"' .AND. SD1->D1_DOC == '"+SF1->F1_DOC+"' .AND. SD1->D1_SERIE == '"+SF1->F1_SERIE+"' .AND. SD1->D1_FORNECE == '"+SF1->F1_FORNECE+"' .AND. SD1->D1_LOJA == '"+SF1->F1_LOJA+"' " )
 	oTableSD1:Setlength(.F.)
 
 	oTableSDE := INNWebTable():New( oINNWeb )
-	oTableSDE:xBrowse( "SDE",1," SDE->DE_FILIAL == '"+SF1->F1_FILIAL+"' .AND. SDE->DE_DOC == '"+SF1->F1_DOC+"' .AND. SDE->DE_SERIE == '"+SF1->F1_SERIE+"' .AND. SDE->DE_FORNECE == '"+SF1->F1_FORNECE+"' .AND. SDE->DE_LOJA == '"+SF1->F1_LOJA+"' " )
+	oTableSDE:SimpleX3Table( "SDE",1," SDE->DE_FILIAL == '"+SF1->F1_FILIAL+"' .AND. SDE->DE_DOC == '"+SF1->F1_DOC+"' .AND. SDE->DE_SERIE == '"+SF1->F1_SERIE+"' .AND. SDE->DE_FORNECE == '"+SF1->F1_FORNECE+"' .AND. SDE->DE_LOJA == '"+SF1->F1_LOJA+"' " )
 	oTableSDE:Setlength(.F.)
 
 	oTableSF3 := INNWebTable():New( oINNWeb )
-	oTableSF3:xBrowse( "SF3",1," SF3->F3_FILIAL == '"+SF1->F1_FILIAL+"' .AND. SF3->F3_NFISCAL == '"+SF1->F1_DOC+"' .AND. SF3->F3_SERIE == '"+SF1->F1_SERIE+"' .AND. SF3->F3_CLIEFOR == '"+SF1->F1_FORNECE+"' .AND. SF3->F3_LOJA == '"+SF1->F1_LOJA+"' " )
+	oTableSF3:SimpleX3Table( "SF3",1," SF3->F3_FILIAL == '"+SF1->F1_FILIAL+"' .AND. SF3->F3_NFISCAL == '"+SF1->F1_DOC+"' .AND. SF3->F3_SERIE == '"+SF1->F1_SERIE+"' .AND. SF3->F3_CLIEFOR == '"+SF1->F1_FORNECE+"' .AND. SF3->F3_LOJA == '"+SF1->F1_LOJA+"' " )
 	oTableSF3:Setlength(.F.)
 
 	oTableCD2 := INNWebTable():New( oINNWeb )
-	oTableCD2:xBrowse( "CD2",1," CD2->CD2_FILIAL == '"+SF1->F1_FILIAL+"' .AND. CD2->CD2_DOC == '"+SF1->F1_DOC+"' .AND. CD2->CD2_SERIE == '"+SF1->F1_SERIE+"' .AND. ( ( CD2->CD2_CODCLI == '"+SF1->F1_FORNECE+"'  .AND. CD2->CD2_LOJCLI == '"+SF1->F1_LOJA+"' ) .OR. ( CD2->CD2_CODFOR == '"+SF1->F1_FORNECE+"' .AND. CD2->CD2_LOJFOR == '"+SF1->F1_LOJA+"' ) ) " )
+	oTableCD2:SimpleX3Table( "CD2",1," CD2->CD2_FILIAL == '"+SF1->F1_FILIAL+"' .AND. CD2->CD2_DOC == '"+SF1->F1_DOC+"' .AND. CD2->CD2_SERIE == '"+SF1->F1_SERIE+"' .AND. ( ( CD2->CD2_CODCLI == '"+SF1->F1_FORNECE+"'  .AND. CD2->CD2_LOJCLI == '"+SF1->F1_LOJA+"' ) .OR. ( CD2->CD2_CODFOR == '"+SF1->F1_FORNECE+"' .AND. CD2->CD2_LOJFOR == '"+SF1->F1_LOJA+"' ) ) " )
 	oTableCD2:Setlength(.F.)
 
 	oTableCDA := INNWebTable():New( oINNWeb )
-	oTableCDA:xBrowse( "CDA",1," CD2->CD2_FILIAL == '"+SF1->F1_FILIAL+"' .AND. CD2->CD2_DOC == '"+SF1->F1_DOC+"' .AND. CD2->CD2_SERIE == '"+SF1->F1_SERIE+"' .AND. ( ( CD2->CD2_CODCLI == '"+SF1->F1_FORNECE+"'  .AND. CD2->CD2_LOJCLI == '"+SF1->F1_LOJA+"' ) .OR. ( CD2->CD2_CODFOR == '"+SF1->F1_FORNECE+"' .AND. CD2->CD2_LOJFOR == '"+SF1->F1_LOJA+"' ) ) " )
+	oTableCDA:SimpleX3Table( "CDA",1," CD2->CD2_FILIAL == '"+SF1->F1_FILIAL+"' .AND. CD2->CD2_DOC == '"+SF1->F1_DOC+"' .AND. CD2->CD2_SERIE == '"+SF1->F1_SERIE+"' .AND. ( ( CD2->CD2_CODCLI == '"+SF1->F1_FORNECE+"'  .AND. CD2->CD2_LOJCLI == '"+SF1->F1_LOJA+"' ) .OR. ( CD2->CD2_CODFOR == '"+SF1->F1_FORNECE+"' .AND. CD2->CD2_LOJFOR == '"+SF1->F1_LOJA+"' ) ) " )
 	oTableCDA:Setlength(.F.)
 
 	oTableSE2 := INNWebTable():New( oINNWeb )
-	oTableSE2:xBrowse( "SE2",1," SE2->E2_FILIAL == '"+SF1->F1_FILIAL+"' .AND. SE2->E2_NUM == '"+SF1->F1_DOC+"' .AND. SE2->E2_PREFIXO == '"+SF1->F1_SERIE+"' .AND. SE2->E2_FORNECE == '"+SF1->F1_FORNECE+"'  .AND. SE2->E2_LOJA == '"+SF1->F1_LOJA+"' " )
+	oTableSE2:SimpleX3Table( "SE2",1," SE2->E2_FILIAL == '"+SF1->F1_FILIAL+"' .AND. SE2->E2_NUM == '"+SF1->F1_DOC+"' .AND. SE2->E2_PREFIXO == '"+SF1->F1_SERIE+"' .AND. SE2->E2_FORNECE == '"+SF1->F1_FORNECE+"'  .AND. SE2->E2_LOJA == '"+SF1->F1_LOJA+"' " )
 	oTableSE2:Setlength(.F.)
 
 Return

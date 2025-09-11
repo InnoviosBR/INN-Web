@@ -175,27 +175,27 @@ Static Function fDetalhe(oINNWeb,xID)
 	oBrowseSF2:SetRec( xID )
 
 	oTableSD2 := INNWebTable():New( oINNWeb )
-	oTableSD2:xBrowse( "SD2",1, " SD2->D2_FILIAL == '"+SF2->F2_FILIAL+"' .AND. SD2->D2_DOC == '"+SF2->F2_DOC+"' .AND. SD2->D2_SERIE == '"+SF2->F2_SERIE+"' " )
+	oTableSD2:SimpleX3Table( "SD2",1, " SD2->D2_FILIAL == '"+SF2->F2_FILIAL+"' .AND. SD2->D2_DOC == '"+SF2->F2_DOC+"' .AND. SD2->D2_SERIE == '"+SF2->F2_SERIE+"' " )
 	oTableSD2:Setlength(.F.)
 
 	oTableSDE := INNWebTable():New( oINNWeb )
-	oTableSDE:xBrowse( "SDE",1," SDE->DE_FILIAL == '"+SF2->F2_FILIAL+"' .AND. SDE->DE_DOC == '"+SF2->F2_DOC+"' .AND. SDE->DE_SERIE == '"+SF2->F2_SERIE+"' .AND. SDE->DE_FORNECE == '"+SF2->F2_CLIENTE+"' .AND. SDE->DE_LOJA == '"+SF2->F2_LOJA+"' ")
+	oTableSDE:SimpleX3Table( "SDE",1," SDE->DE_FILIAL == '"+SF2->F2_FILIAL+"' .AND. SDE->DE_DOC == '"+SF2->F2_DOC+"' .AND. SDE->DE_SERIE == '"+SF2->F2_SERIE+"' .AND. SDE->DE_FORNECE == '"+SF2->F2_CLIENTE+"' .AND. SDE->DE_LOJA == '"+SF2->F2_LOJA+"' ")
 	oTableSDE:Setlength(.F.)
 
 	oTableSF3 := INNWebTable():New( oINNWeb )
-	oTableSF3:xBrowse( "SF3",1," SF3->F3_FILIAL == '"+SF2->F2_FILIAL+"' .AND. SF3->F3_NFISCAL == '"+SF2->F2_DOC+"' .AND. SF3->F3_SERIE == '"+SF2->F2_SERIE+"' .AND. SF3->F3_CLIEFOR == '"+SF2->F2_CLIENTE+"' .AND. SF3->F3_LOJA == '"+SF2->F2_LOJA+"' ")
+	oTableSF3:SimpleX3Table( "SF3",1," SF3->F3_FILIAL == '"+SF2->F2_FILIAL+"' .AND. SF3->F3_NFISCAL == '"+SF2->F2_DOC+"' .AND. SF3->F3_SERIE == '"+SF2->F2_SERIE+"' .AND. SF3->F3_CLIEFOR == '"+SF2->F2_CLIENTE+"' .AND. SF3->F3_LOJA == '"+SF2->F2_LOJA+"' ")
 	oTableSF3:Setlength(.F.)
 
 	oTableCD2 := INNWebTable():New( oINNWeb )
-	oTableCD2:xBrowse( "CD2",1," CD2->CD2_FILIAL == '"+SF2->F2_FILIAL+"' .AND. CD2->CD2_DOC == '"+SF2->F2_DOC+"' .AND. CD2->CD2_SERIE == '"+SF2->F2_SERIE+"' .AND. ( ( CD2->CD2_CODCLI == '"+SF2->F2_CLIENTE+"'  .AND. CD2->CD2_LOJCLI == '"+SF2->F2_LOJA+"' ) .OR. ( CD2->CD2_CODFOR == '"+SF2->F2_CLIENTE+"' .AND. CD2->CD2_LOJFOR == '"+SF2->F2_LOJA+"' ) ) " )
+	oTableCD2:SimpleX3Table( "CD2",1," CD2->CD2_FILIAL == '"+SF2->F2_FILIAL+"' .AND. CD2->CD2_DOC == '"+SF2->F2_DOC+"' .AND. CD2->CD2_SERIE == '"+SF2->F2_SERIE+"' .AND. ( ( CD2->CD2_CODCLI == '"+SF2->F2_CLIENTE+"'  .AND. CD2->CD2_LOJCLI == '"+SF2->F2_LOJA+"' ) .OR. ( CD2->CD2_CODFOR == '"+SF2->F2_CLIENTE+"' .AND. CD2->CD2_LOJFOR == '"+SF2->F2_LOJA+"' ) ) " )
 	oTableCD2:Setlength(.F.)
 
 	oTableSE1 := INNWebTable():New( oINNWeb )
-	oTableSE1:xBrowse( "SE1",1," SE1->E1_FILIAL == '"+SF2->F2_FILIAL+"' .AND. SE1->E1_NUM == '"+SF2->F2_DOC+"' .AND. SE1->E1_PREFIXO == '"+SF2->F2_SERIE+"' .AND. SE1->E1_CLIENTE == '"+SF2->F2_CLIENTE+"'  .AND. SE1->E1_LOJA == '"+SF2->F2_LOJA+"' ")
+	oTableSE1:SimpleX3Table( "SE1",1," SE1->E1_FILIAL == '"+SF2->F2_FILIAL+"' .AND. SE1->E1_NUM == '"+SF2->F2_DOC+"' .AND. SE1->E1_PREFIXO == '"+SF2->F2_SERIE+"' .AND. SE1->E1_CLIENTE == '"+SF2->F2_CLIENTE+"'  .AND. SE1->E1_LOJA == '"+SF2->F2_LOJA+"' ")
 	oTableSE1:Setlength(.F.)
 
 	oTableCDA := INNWebTable():New( oINNWeb )
-	oTableCDA:xBrowse( "CDA",1," CDA->CDA_FILIAL == '"+SF2->F2_FILIAL+"' .AND. CDA->CDA_NUMERO == '"+SF2->F2_DOC+"' .AND. CDA->CDA_SERIE == '"+SF2->F2_SERIE+"' .AND. CDA->CDA_CLIFOR == '"+SF2->F2_CLIENTE+"'  .AND. CDA->CDA_LOJA == '"+SF2->F2_LOJA+"' ")
+	oTableCDA:SimpleX3Table( "CDA",1," CDA->CDA_FILIAL == '"+SF2->F2_FILIAL+"' .AND. CDA->CDA_NUMERO == '"+SF2->F2_DOC+"' .AND. CDA->CDA_SERIE == '"+SF2->F2_SERIE+"' .AND. CDA->CDA_CLIFOR == '"+SF2->F2_CLIENTE+"'  .AND. CDA->CDA_LOJA == '"+SF2->F2_LOJA+"' ")
 	oTableCDA:Setlength(.F.)
 
 Return

@@ -11,7 +11,7 @@ User Function wPC(oINNWeb)
 	
 	if xID > 0
 		oTableSC7 := INNWebTable():New( oINNWeb )
-		oTableSC7:xBrowse( "SC7",1, " SC7->C7_FILIAL == '"+xFilial("SC7")+"' .AND. SC7->C7_NUM == '"+xID+"' " )
+		oTableSC7:SimpleX3Table( "SC7",1, " SC7->C7_FILIAL == '"+xFilial("SC7")+"' .AND. SC7->C7_NUM == '"+xID+"' " )
 		oTableSC7:Setlength(.F.)
 		oINNWeb:SetTitNot("Dados detalhados do Pedido de Compras")
 	else		   

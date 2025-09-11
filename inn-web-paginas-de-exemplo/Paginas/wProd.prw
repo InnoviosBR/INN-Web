@@ -9,22 +9,36 @@ User Function wProd(oINNWeb)
 	Local xID	:= Val(iif(Valtype(HttpGet->xID) == "C" .and. !empty(HttpGet->xID),HttpGet->xID,""))
 			
 	if xID > 0			
-		
-		oINNWebbBrowse := INNWebBrowse():New( oINNWeb )
-		oINNWebbBrowse:SetTabela( "SB1" )
-		oINNWebbBrowse:SetRec( xID )
-		
+
 		dbSelectArea("SB1")
 		SB1->(dbGoTo(xID))
-		dbSelectArea("SB5")
-		SB5->(dbSetOrder(1))
-		IF SB5->(dbSeek(xFilial("SB5")+SB1->B1_COD))
+
+		if SB1->(Recno()) == xID .and. SB1->B1_FILIAL == xFilial("SB1")
+					
 			oINNWebbBrowse := INNWebBrowse():New( oINNWeb )
-			oINNWebbBrowse:SetTabela( "SB5" )
-			oINNWebbBrowse:SetRec( SB5->(Recno()) )
-		ENDIF
-		
-		oINNWeb:SetTitNot("Dados detalhados do produto")
+			oINNWebbBrowse:SetTabela( "SB1" )
+			oINNWebbBrowse:SetRec( xID )
+			
+			dbSelectArea("SB1")
+			SB1->(dbGoTo(xID))
+			dbSelectArea("SB5")
+			SB5->(dbSetOrder(1))
+			IF SB5->(dbSeek(xFilial("SB5")+SB1->B1_COD))
+				oINNWebbBrowse := INNWebBrowse():New( oINNWeb )
+				oINNWebbBrowse:SetTabela( "SB5" )
+				oINNWebbBrowse:SetRec( SB5->(Recno()) )
+			ENDIF
+
+			fGaleria(xID)
+			
+			oINNWeb:SetTitNot("Dados detalhados do produto")
+
+		else
+
+			oINNWeb:AddCallOut("Produto não encontrado.","danger")
+			oINNWeb:SetTitle("Produto ( - )")
+
+		endif
 
 	else
 		fPesquisa(@oINNWeb)  
@@ -33,7 +47,7 @@ User Function wProd(oINNWeb)
 	oINNWeb:SetTitle("Produtos")
 	oINNWeb:SetIdPgn("wProd")
 	
-Return(.T.)   
+Return(.T.)
 
 
 Static Function fPesquisa(oINNWeb)
@@ -207,3 +221,17 @@ Static Function fPesquisa(oINNWeb)
 	endif
 		
 Return
+
+
+Static Function fGaleria(xID) 
+    	   
+	dbSelectArea("SB1")
+	SB1->(dbGoto(xID))
+    
+	oINNWebImgProd := INNWebImgProd():New( oINNWeb )
+	oINNWebImgProd:SetProduto( SB1->B1_COD )
+	oINNWebImgProd:GetGaleria()
+
+	oINNWeb:AddHeadBtn( {"wProdFotos","produto="+SB1->B1_COD,"Galeria Fotos"} )
+	
+Return 

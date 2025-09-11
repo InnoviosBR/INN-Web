@@ -23,6 +23,10 @@ CLASS INNWebBrowse FROM ClsINNWeb
 	data lCria
 	data lDados
 	data lErro
+	data lPastas
+	data lReduzTitulo
+	data lInLine
+	data lResize
 
 	METHOD New() Constructor
 	METHOD Init()
@@ -36,6 +40,10 @@ CLASS INNWebBrowse FROM ClsINNWeb
 	METHOD SetCPOObr(  )
 	METHOD SetTitle(  )
 	METHOD Execute(  )
+	METHOD SetPastas(  )
+	METHOD SetRedTit(  )
+	METHOD SetINLINE(  )
+	METHOD SetResize(  )
 
 ENDCLASS
 
@@ -61,6 +69,11 @@ METHOD Init() CLASS INNWebBrowse
 	::lCria		:= .F.
 	::lDados	:= .F.
 	::lErro		:= .F.
+	::lPastas	:= .T.
+	
+	::lReduzTitulo := .T.
+	::lInLine	:= .F.
+	::lResize	:= .F.
 
 Return
 
@@ -92,7 +105,7 @@ METHOD SetAlias( xAlias , lHead ) Class INNWebBrowse
 
 	Default lHead := .F.
 	
-	::cTitulo := Alltrim(xAlias)
+	::cTitulo := Alltrim(xAlias) + " - " + Alltrim(POSICIONE("SX2",1,xAlias,"X2_NOME"))
 	::cTabela := xAlias
 	
 	if lHead
@@ -149,6 +162,22 @@ METHOD SetDados( xDados ) Class INNWebBrowse
 	::aDados	:= aClone( xDados )
 Return
 
+METHOD SetPastas( xPastas ) Class INNWebBrowse
+	::lPastas	:= IIF(ValType(xPastas)=="L",xPastas,::lPastas)
+Return
+
+METHOD SetRedTit( xReduzTitulo ) Class INNWebBrowse
+	::lReduzTitulo	:= IIF(ValType(xReduzTitulo)=="L",xReduzTitulo,::lReduzTitulo)
+Return
+
+METHOD SetResize( xResize ) Class INNWebBrowse
+	::lResize	:= IIF(ValType(xResize)=="L",xResize,::lResize)
+Return
+
+METHOD SetINLINE( xInLine ) Class INNWebBrowse
+	::lInLine	:= IIF(ValType(xInLine)=="L",xInLine,::lInLine)
+Return
+
 METHOD Execute() Class INNWebBrowse
 
 	Local cBody			:= ""
@@ -201,15 +230,19 @@ METHOD Execute() Class INNWebBrowse
 				Loop
 			ENDIF
 			
-			cPasta := ::cTabela + iif(Empty(SX3->X3_FOLDER),"X",Alltrim(SX3->X3_FOLDER))
-			nPasta := aScan(aDicionario,{|x|  Alltrim(x[1]) == cPasta })
-			if nPasta < 1
-				if SXA->(dbSeek(SX3->X3_ARQUIVO+SX3->X3_FOLDER))
-					aadd(aDicionario,{cPasta,alltrim(SXA->XA_DESCRIC),{}})
-				else
-					aadd(aDicionario,{cPasta,"Outros",{}})
-				endif				
-				nPasta := Len(aDicionario)
+			if ::lPastas
+				cPasta := ::cTabela + iif(Empty(SX3->X3_FOLDER),"X",Alltrim(SX3->X3_FOLDER))
+				nPasta := aScan(aDicionario,{|x|  Alltrim(x[1]) == cPasta })
+				if nPasta < 1
+					if SXA->(dbSeek(SX3->X3_ARQUIVO+SX3->X3_FOLDER))
+						aadd(aDicionario,{cPasta,alltrim(SXA->XA_DESCRIC),{}})
+					else
+						aadd(aDicionario,{cPasta,"Outros",{}})
+					endif				
+					nPasta := Len(aDicionario)
+				endif
+			else
+				nPasta := 1
 			endif
 			
 			aCampo := {Alltrim(SX3->X3_CAMPO),Alltrim(SX3->X3_TITULO),nil,0,"T",SX3->X3_ORDEM}
@@ -217,13 +250,13 @@ METHOD Execute() Class INNWebBrowse
 			IF SX3->X3_TIPO ==  "D"
 				aCampo[3] := dToc(M->&(SX3->X3_CAMPO))
 			ELSEIF SX3->X3_TIPO ==  "N"
-				aCampo[3] := Alltrim(TRANSFORM(M->&(SX3->X3_CAMPO),SX3->X3_PICTURE))
+				aCampo[3] := TRANSFORM(M->&(SX3->X3_CAMPO),SX3->X3_PICTURE)
 			ELSEIF SX3->X3_TIPO ==  "L"
-				aCampo[3] := IIF(M->&(SX3->X3_CAMPO),"VERDADEIRO","FALSO")
+				aCampo[3] := IIF(M->&(SX3->X3_CAMPO),"VERDADEIRO","FALSO     ")
 			ELSEIF SX3->X3_TIPO ==  "C" .and. empty(SX3->X3_CBOX)
-				aCampo[3] := Alltrim(M->&(SX3->X3_CAMPO))
+				aCampo[3] := M->&(SX3->X3_CAMPO)
 			ELSEIF SX3->X3_TIPO ==  "C" .and. !empty(SX3->X3_CBOX)
-				aCampo[3] := Alltrim(M->&(SX3->X3_CAMPO)) + fVOpcBox(M->&(SX3->X3_CAMPO),SX3->X3_CBOX,SX3->X3_CAMPO)
+				aCampo[3] := M->&(SX3->X3_CAMPO) + fVOpcBox(M->&(SX3->X3_CAMPO),SX3->X3_CBOX,SX3->X3_CAMPO)
 			ELSEIF SX3->X3_TIPO ==  "M"
 				aCampo[3] := Alltrim(M->&(SX3->X3_CAMPO))
 				aCampo[5] := "M"
@@ -232,9 +265,14 @@ METHOD Execute() Class INNWebBrowse
 				aCampo[3] := "DESPREPARADO PARA O TIPO: " + SX3->X3_TIPO
 			ENDIF    
 			
-			aCampo[4] := cValToChar(Len(aCampo[3]))
-			aCampo[4] := iif(Val(aCampo[4])<=100,aCampo[4],"100")
-			aCampo[4] := iif(Val(aCampo[4])<=10,"10",aCampo[4])
+			if ::lResize
+				aCampo[3] := Alltrim(aCampo[3])
+				aCampo[4] := Len(aCampo[3])
+			else
+				aCampo[4] := Len(aCampo[3])
+				aCampo[3] := Alltrim(aCampo[3])
+			endif
+
 			aadd(aDicionario[nPasta][3],aCampo)
 						
 			SX3->(dbSkip())
@@ -264,11 +302,11 @@ METHOD Execute() Class INNWebBrowse
 			IF ::aDados[nY][3] ==  "D"
 				aCampo[3] := dToc(::aDados[nY][4])
 			ELSEIF ::aDados[nY][3] ==  "N"
-				aCampo[3] := Alltrim(TRANSFORM(::aDados[nY][4],"@E 99,999,999,999.999999"))
+				aCampo[3] := TRANSFORM(::aDados[nY][4],"@E 99,999,999,999.999999")
 			ELSEIF ::aDados[nY][3] ==  "L"
-				aCampo[3] := IIF(::aDados[nY][4],"VERDADEIRO","FALSO")
+				aCampo[3] := IIF(::aDados[nY][4],"VERDADEIRO","FALSO     ")
 			ELSEIF ::aDados[nY][3] ==  "C"
-				aCampo[3] := Alltrim(::aDados[nY][4])
+				aCampo[3] := ::aDados[nY][4]
 			ELSEIF ::aDados[nY][3] ==  "M"
 				aCampo[3] := Alltrim(::aDados[nY][4])
 				aCampo[5] := "M"
@@ -277,9 +315,14 @@ METHOD Execute() Class INNWebBrowse
 				aCampo[3] := "DESPREPARADO PARA O TIPO: " + ::aDados[nY][3]
 			ENDIF    
 			
-			aCampo[4] := cValToChar(Len(aCampo[3]))
-			//aCampo[4] := iif(Val(aCampo[4])<=100,aCampo[4],"100")
-			//aCampo[4] := iif(Val(aCampo[4])<=10,"10",aCampo[4])
+			if ::lResize
+				aCampo[3] := Alltrim(aCampo[3])
+				aCampo[4] := Len(aCampo[3])
+			else
+				aCampo[4] := Len(aCampo[3])
+				aCampo[3] := Alltrim(aCampo[3])
+			endif
+
 			aadd(aDicionario[nPasta][3],aCampo)
 			
 		next nY
@@ -301,11 +344,11 @@ METHOD Execute() Class INNWebBrowse
 			IF ::aHead[nY][3] ==  "D"
 				aCampo[3] := dToc((::cTabela)->&(::aHead[nY][1]))
 			ELSEIF ::aHead[nY][3] ==  "N"
-				aCampo[3] := Alltrim(TRANSFORM((::cTabela)->&(::aHead[nY][1]),"@E 99,999,999,999.999999"))
+				aCampo[3] := TRANSFORM((::cTabela)->&(::aHead[nY][1]),"@E 99,999,999,999.999999")
 			ELSEIF ::aHead[nY][3] ==  "L"
-				aCampo[3] := IIF((::cTabela)->&(::aHead[nY][1]),"VERDADEIRO","FALSO")
+				aCampo[3] := IIF((::cTabela)->&(::aHead[nY][1]),"VERDADEIRO","FALSO     ")
 			ELSEIF ::aHead[nY][3] ==  "C"
-				aCampo[3] := Alltrim((::cTabela)->&(::aHead[nY][1]))
+				aCampo[3] := (::cTabela)->&(::aHead[nY][1])
 			ELSEIF ::aHead[nY][3] ==  "M"
 				aCampo[3] := LEFT(Alltrim((::cTabela)->&(::aHead[nY][1])),250)
 				aCampo[5] := "M"
@@ -314,9 +357,14 @@ METHOD Execute() Class INNWebBrowse
 				aCampo[3] := "DESPREPARADO PARA O TIPO: " + ::aHead[nY][3]
 			ENDIF    
 			
-			aCampo[4] := cValToChar(Len(aCampo[3]))
-			aCampo[4] := iif(Val(aCampo[4])<=100,aCampo[4],"100")
-			aCampo[4] := iif(Val(aCampo[4])<=10,"10",aCampo[4])
+			if ::lResize
+				aCampo[3] := Alltrim(aCampo[3])
+				aCampo[4] := Len(aCampo[3])
+			else
+				aCampo[4] := Len(aCampo[3])
+				aCampo[3] := Alltrim(aCampo[3])
+			endif
+
 			aadd(aDicionario[nPasta][3],aCampo)
 			
 		next nY
@@ -365,7 +413,19 @@ METHOD Execute() Class INNWebBrowse
 				//cBody += "</div>" + CRLF
 				//cBody += "</div>" + CRLF
 			ELSE
-				cBody += "<div class='col-sm-12 col-lg-"+::oParent:TamFild( { aDicionario[nY][3][nX][1] , aDicionario[nY][3][nX][2] , len(aDicionario[nY][3][nX][3]) , aDicionario[nY][3][nX][5] })+" my-0'>" + CRLF
+
+				if ::lInLine
+					cTam := "12"
+				else
+					conout(aDicionario[nY][3][nX][1] + " - " + cValToChar(aDicionario[nY][3][nX][4]))
+					cTam := ::oParent:TamFild( { aDicionario[nY][3][nX][1] ,; 		//Nome do campo (Nao usado)
+												aDicionario[nY][3][nX][2] ,; 		//Titulo
+												aDicionario[nY][3][nX][4] ,; 	//Tamanho do Conteudo
+												aDicionario[nY][3][nX][5],; 		//Tipo
+												::lReduzTitulo})
+				endif
+
+				cBody += "<div class='col-sm-12 col-lg-"+cTam+" my-0'>" + CRLF
 				cBody += "  <div class='form-group'>" + CRLF
 				cBody += "    <div class='form-label-group'>" + CRLF
 				cBody += "      <input name='"+aDicionario[nY][3][nX][1]+"' type='text' class='form-control placeholder-shown' id='"+aDicionario[nY][3][nX][1]+"' value='"+aDicionario[nY][3][nX][3]+"'>" + CRLF

@@ -160,7 +160,9 @@ METHOD Execute() Class INNWebParam
 
 			Case ::aParm[nY][4] == "D" //Data
 				::aParm[nY][5] := iif(empty(::aParm[nY][5]),"",dToc(::aParm[nY][5]))
-				cBody += "<div class='col-sm-12 col-lg-"+::oParent:TamFild(::aParm[nY])+" my-0'>" + CRLF
+				cBody += "<div class='col-sm-12 col-lg-"
+				cBody += ::oParent:TamFild({::aParm[nY][1],::aParm[nY][2],::aParm[nY][3],::aParm[nY][4]})
+				cBody += " my-0'>" + CRLF
 				cBody += "  <div class='form-group'>" + CRLF
 				cBody += "    <div class='form-label-group'>" + CRLF
 				cBody += "      <input name='"+::aParm[nY][1]+"' "
@@ -185,7 +187,9 @@ METHOD Execute() Class INNWebParam
 				aTemp := aClone(::aParm[nY])
 				aTemp[3] += 20
 				cPic := "@E 999,999,999,999."+Replicate("9",::aParm[nY][3])
-				cBody += "<div class='col-sm-12 col-lg-"+::oParent:TamFild(aTemp)+" my-0'>" + CRLF
+				cBody += "<div class='col-sm-12 col-lg-"
+				cBody += ::oParent:TamFild({aTemp[1],aTemp[2],aTemp[3],aTemp[4]})
+				cBody += " my-0'>" + CRLF
 				cBody += "  <div class='form-group'>" + CRLF
 				cBody += "    <div class='form-label-group'>" + CRLF
 				cBody += "			    <input name='"+::aParm[nY][1]+"' "
@@ -209,7 +213,9 @@ METHOD Execute() Class INNWebParam
 
 			
 			Case ::aParm[nY][4] == "MN" //Monetario
-				cBody += "<div class='col-sm-12 col-lg-"+::oParent:TamFild(::aParm[nY])+" my-0'>" + CRLF
+				cBody += "<div class='col-sm-12 col-lg-"
+				cBody += ::oParent:TamFild({::aParm[nY][1],::aParm[nY][2],::aParm[nY][3],::aParm[nY][4]})
+				cBody += " my-0'>" + CRLF
 				cBody += "  <div class='form-group'>" + CRLF
 				cBody += "    <div class='form-label-group'>" + CRLF
 				cBody += "			    <input name='"+::aParm[nY][1]+"' "
@@ -234,7 +240,9 @@ METHOD Execute() Class INNWebParam
 			
 			Case ::aParm[nY][4] == "RD"
 			
-				cBody += "<div class='col-sm-12 col-lg-"+::oParent:TamFild(::aParm[nY])+" my-0'>" + CRLF
+				cBody += "<div class='col-sm-12 col-lg-"
+				cBody += ::oParent:TamFild({::aParm[nY][1],::aParm[nY][2],::aParm[nY][3],::aParm[nY][4]})
+				cBody += " my-0'>" + CRLF
 				cBody += "  <div class='form-group'>" + CRLF
 				cBody += "    <label class='d-block'>"+::aParm[nY][2]+"</label>" + CRLF
 
@@ -251,7 +259,9 @@ METHOD Execute() Class INNWebParam
 
 			Case ::aParm[nY][4] == "C"//Combo ou select
 			
-				cBody += "<div class='col-sm-12 col-lg-"+::oParent:TamFild(::aParm[nY])+" my-0'>" + CRLF
+				cBody += "<div class='col-sm-12 col-lg-"
+				cBody += ::oParent:TamFild({::aParm[nY][1],::aParm[nY][2],::aParm[nY][3],::aParm[nY][4]})
+				cBody += " my-0'>" + CRLF
 				cBody += "  <div class='form-group'>" + CRLF
 				cBody += "    <div class='form-label-group'>" + CRLF
 				cBody += "      <select id='"+Alltrim(::aParm[nY][1])+"' name='"+Alltrim(::aParm[nY][1])+"' class='custom-select' " 
@@ -274,28 +284,28 @@ METHOD Execute() Class INNWebParam
 			
 			Case ::aParm[nY][4] == "CM"//Combo ou select multipla escolha
 
-				cBody += "<div class='col-sm-12 col-lg-"+::oParent:TamFild(::aParm[nY])+" my-0'>" + CRLF
+				::oParent:AddLoad({"$('#"+Alltrim(::aParm[nY][1])+"').select2({placeholder: '"+::aParm[nY][2]+"'});"})
+				::oParent:AddLoad({"$('#"+Alltrim(::aParm[nY][1])+"').val(["+::aParm[nY][5]+"]).trigger('change');"})
+
+				cBody += "<div class='col-sm-12 col-lg-"
+				cBody += ::oParent:TamFild({::aParm[nY][1],::aParm[nY][2],::aParm[nY][3],::aParm[nY][4]})
+				cBody += " my-0'>" + CRLF
 				cBody += "  <div class='form-group'>" + CRLF
-				cBody += "    <div class='form-label-group'>" + CRLF
-				cBody += "      <select id='"+Alltrim(::aParm[nY][1])+"' name='"+Alltrim(::aParm[nY][1])+"' class='custom-select' " 
+				cBody += "    <select id='"+Alltrim(::aParm[nY][1])+"' name='"+Alltrim(::aParm[nY][1])+"' class='form-control js-example-basic-multiple' multiple"
 				IF ::aParm[nY][6]
 					cBody += " required "
 				endif
 				IF nY == 1
 					cBody += " autofocus='' "
 				endif
-				cBody += " >" + CRLF
+				cBody += ">" + CRLF
 				for nX := 1 To Len(::aParm[nY][7])
-					cBody += "						<option value='"+Alltrim(::aParm[nY][7][nX][1])+"'>"+Alltrim(::aParm[nY][7][nX][2])+"</option>" + CRLF
+					cBody += "      <option value='"+Alltrim(::aParm[nY][7][nX][1])+"'>"+Alltrim(::aParm[nY][7][nX][2])+"</option>" + CRLF
 				next nX
-				cBody += "		         </select>" + CRLF
-				cBody += "      <label>"+::aParm[nY][2]+"</label>" + CRLF
-				cBody += "    </div><!-- /col-sm-12 -->" + CRLF
-				cBody += "  </div><!-- /form-group -->" + CRLF
-				cBody += "</div><!-- /form-label-group -->" + CRLF
-				::oParent:AddLoad({"$('#"+::aParm[nY][1]+"').val('"+::aParm[nY][5]+"');"})
+				cBody += "    </select>" + CRLF
 
-				//::oParent:AddLoad({"$('#"+Alltrim(::aParm[nY][1])+"').select2();"})
+				cBody += "  </div><!-- /.form-group -->" + CRLF
+				cBody += "</div><!-- /.col-sm-12 col-lg-12  -->" + CRLF
 		
 			Case ::aParm[nY][4] == "H" //Hidden (Escondido)
 				cBody += "			    <input name='"+::aParm[nY][1]+"' "
@@ -304,7 +314,9 @@ METHOD Execute() Class INNWebParam
 				cBody += "                     value='"+::aParm[nY][5]+"'>" + CRLF
 			
 			Case ::aParm[nY][4] == "M"//Campo memo
-				cBody += "<div class='col-sm-12 col-lg-"+::oParent:TamFild(::aParm[nY])+" my-0'>" + CRLF
+				cBody += "<div class='col-sm-12 col-lg-"
+				cBody += ::oParent:TamFild({::aParm[nY][1],::aParm[nY][2],::aParm[nY][3],::aParm[nY][4]})
+				cBody += " my-0'>" + CRLF
 				cBody += "  <div class='form-group'>" + CRLF
 				cBody += "    <div class='form-label-group'>" + CRLF		
 				cBody += "			    <textarea style='width:100%; min-height: 500px;' "
@@ -330,7 +342,9 @@ METHOD Execute() Class INNWebParam
 				::aParm[nY][1] := "FilsCalc"
 				::aParm[nY][2] := "Filial"
 				::aParm[nY][3] := 20
-				cBody += "<div class='col-sm-12 col-lg-"+::oParent:TamFild(::aParm[nY])+" my-0'>" + CRLF
+				cBody += "<div class='col-sm-12 col-lg-"
+				cBody += ::oParent:TamFild({::aParm[nY][1],::aParm[nY][2],::aParm[nY][3],::aParm[nY][4]})
+				cBody += " my-0'>" + CRLF
 				cBody += "  <div class='form-group'>" + CRLF
 				cBody += "    <div class='form-label-group'>" + CRLF
 				cBody += "	    <select id='FilsCalc' name='FilsCalc' size='2' class='form-select custom-select' required multiple "// multiple='multiple' style='min-width: 100px;' " 
@@ -366,7 +380,9 @@ METHOD Execute() Class INNWebParam
 				cBody += "</div><!-- /form-label-group -->" + CRLF
 
 			OtherWise //Texto
-				cBody += "<div class='col-sm-12 col-lg-"+::oParent:TamFild(::aParm[nY])+" my-0'>" + CRLF
+				cBody += "<div class='col-sm-12 col-lg-"
+				cBody += ::oParent:TamFild({::aParm[nY][1],::aParm[nY][2],::aParm[nY][3],::aParm[nY][4]})
+				cBody += " my-0'>" + CRLF
 				cBody += "  <div class='form-group'>" + CRLF
 				cBody += "    <div class='form-label-group'>" + CRLF
 				cBody += "			    <input name='"+::aParm[nY][1]+"' "
@@ -572,6 +588,7 @@ Return
 
 METHOD addComboMultiple(xParm) Class INNWebParam
 
+	Local nY
 	Local aItemParm := {"",;	 	//Campo
 						"",;	 	//Titulo do Campo
 						0,; 		//Tamanho
@@ -582,9 +599,13 @@ METHOD addComboMultiple(xParm) Class INNWebParam
 
 	aItemParm[1] := xParm[1] //01 Campo
 	aItemParm[2] := xParm[2] //02 Titulo do Campo
-	//aItemParm[5] := xParm[3] //04 Conteudo 
+	aItemParm[5] := xParm[3] //04 Conteudo 
 	aItemParm[7] := xParm[4] //Itens da array
 	aItemParm[6] := xParm[5] //05 Obrigatorio? (required)
+
+	for nY := 1 To Len(xParm[4])
+		aItemParm[3] := Max( aItemParm[3] , Len(xParm[4][nY][2]) )
+	next
 
 	aadd(::aParm,aClone(aItemParm))
 	

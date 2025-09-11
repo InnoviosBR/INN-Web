@@ -131,7 +131,8 @@ ENDCLASS
 METHOD New() Class ClsINNWeb
 		
 	::xInicio   := dTos(date())+" "+Time()
-	::cVersao	:= "1.0.0" //03/06/2022
+	//::cVersao	:= "1.0.0" //03/06/2022
+	::cVersao	:= "1.0.1" //11/09/2025
 		
 	::cNomeApp	:= "INN web"
 	::cTitlePage:= "INNOVIOS"
@@ -800,16 +801,16 @@ METHOD ExecHead() Class ClsINNWeb
 	endif
 
 	//select2
-	aadd(::aIncl[i][2],{"css","<link href='vendor/select2/css/select2.min.css'>"})
-	aadd(::aIncl[i][2],{"css","<link href='vendor/select2/css/select2-bootstrap.min.css'>"})
-	aadd(::aIncl[i][2],{"foot","<script src='vendor/select2/js/select2.min.js'></script>"})
+	aadd(::aIncl[i][2],{"css","<link href='https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css' rel='stylesheet' />"})
+	//aadd(::aIncl[i][2],{"css","<link href='vendor/select2/css/select2-bootstrap.min.css'>"})
+	aadd(::aIncl[i][2],{"foot","<script src='https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js'></script>"})
 
 	//HoldOn-js
 	//aadd(::aIncl[i][2],{"css","<link href='vendor/HoldOn-js/css/HoldOn.min.css'>"})
 	//aadd(::aIncl[i][2],{"foot","<script src='vendor/HoldOn-js/js/HoldOn.min.js'></script>"})
 
 	//redirect
-	aadd(::aIncl[i][2],{"foot","<script src='vendor/redirect/jquery.redirect.js'></script>"})
+	//aadd(::aIncl[i][2],{"foot","<script src='vendor/redirect/jquery.redirect.js'></script>"})
 
 	//datatables
 	aadd(::aIncl[i][2],{"css","<link href='vendor/datatables.net-4/datatables.min.css'>"})
@@ -817,8 +818,8 @@ METHOD ExecHead() Class ClsINNWeb
 	aadd(::aIncl[i][2],{"foot","<script src='vendor/datatables.net-4/JSZip-2.5.0/jszip.min.js'></script>"})
 
 	//toastr
-	aadd(::aIncl[i][2],{"css","<link href='vendor/toastr/build/toastr.min.css'>"})
-	aadd(::aIncl[i][2],{"foot","<script src='vendor/toastr/build/toastr.min.js'></script>"})
+	//aadd(::aIncl[i][2],{"css","<link href='vendor/toastr/build/toastr.min.css'>"})
+	//aadd(::aIncl[i][2],{"foot","<script src='vendor/toastr/build/toastr.min.js'></script>"})
 
 	//Mascaras
 	aadd(::aIncl[i][2],{"foot","<script src='vendor/datepicker/js/bootstrap-datepicker.min.js'></script>"})
@@ -829,8 +830,8 @@ METHOD ExecHead() Class ClsINNWeb
 	aadd(::aIncl[i][2],{"foot","<script src='vendor/mask/jquery.maskMoney.min.js'></script>"})
 
 	//touchspin
-	aadd(::aIncl[i][2],{"css","<link href='vendor/touchspin/jquery.bootstrap-touchspin.css' rel='stylesheet'>"})
-	aadd(::aIncl[i][2],{"foot","<script src='vendor/touchspin/jquery.bootstrap-touchspin.js'></script>"})
+	//aadd(::aIncl[i][2],{"css","<link href='vendor/touchspin/jquery.bootstrap-touchspin.css' rel='stylesheet'>"})
+	//aadd(::aIncl[i][2],{"foot","<script src='vendor/touchspin/jquery.bootstrap-touchspin.js'></script>"})
 
 	if ::lTxtEdit .or. ::lTxtSpls
 	
@@ -1485,24 +1486,54 @@ Return(lRet)
 
 METHOD TamFild(aField) Class ClsINNWeb
 	
+	Local xTam 		 := nil
+	Local cTamValue  := nil
+	Local cTamTitulo := nil
+
 	//aField[1] -> Nome do campo (Nao usado)
 	//aField[2] -> Titulo
 	//aField[3] -> Conteudo
 	//aField[4] -> Tipo
 
-	Local xTam := "2"
-	Local cTamValue := aField[3] //Conteudo
-	Local cTamTitulo := len(aField[2]) //Titulo
+	//lReduzTitulo
+	if len(aField) < 5
+		aadd(aField,.T.)
+	endif
+
+	//Conteudo, ja vem em numero
+	cTamValue := aField[3] 
+
+	//Titulo, vamos pegar o tamanho
+	cTamTitulo := len(Alltrim(aField[2])) 
+	
+	//reduzir a 40% do tamanho do titulo porque essa é a redução da fonte
+	if aField[5]
+		cTamTitulo := Round( cTamTitulo * 0.6 ,0)
+	endif
 
 	if aField[4] == "D"
 		cTamValue := 10
 	endif
 
-	xTam := max(cTamValue,Round(cTamTitulo*0.4,0))
-	xTam := iif (xTam > 60 , 60 , xTam) 
-	xTam := round(xTam/10,0) + iif ( xTam % 10 >= 0 , 1 , 0)
-	xTam := iif (xTam > 6 , 6 , xTam)
+	//Define quem é maior, o conteudo ou o titulo
+	xTam := max(cTamValue,cTamTitulo)
+
+	//Se o tamanho for maior que 60, limita em 60
+	xTam := iif (xTam > 120 , 120 , xTam)
+	
+	//Divide por 10 e arredonda para cima
+	//pega o resto da divisao e soma 1 se tiver resto
+	//faço isso para forcar o arredondamento para cima
+	//independente do valor de resto
+	xTam := round(xTam / 10 , 0) + iif ( xTam % 10 >= 0 , 1 , 0) 
+	
+	//Limita o tamanho maximo em 6
+	xTam := iif (xTam > 12 , 12 , xTam)
+
+	//Converte para caracter
 	xTam := cValToChar(xTam)
+
+	conout(aField[1]+" = "+xTam)
 	
 Return(xTam)
 
@@ -1712,7 +1743,7 @@ Return
 
 METHOD ExePod(cCodigo) Class ClsINNWeb
 
-	Local aLinha 	:= {}
+	/*Local aLinha 	:= {}
 	Local oINNWebTable := INNWebTable():New( oINNWeb )
 	
 	oINNWebTable:SetSimple()
@@ -1739,7 +1770,34 @@ METHOD ExePod(cCodigo) Class ClsINNWeb
 		
 		oINNWebTable:AddCols(aLinha)
 	
-	endif
+	endif*/
+
+	Local oBrowse,xDados
+
+	dbSelectArea("SB1")
+	SB1->(dbSetOrder(1))
+	if ( SB1->(dbSeek(xFilial("SB1")+cCodigo)) )
+	
+		oBrowse	:= INNWebBrowse():New( Self )
+
+		//aDados[1] -> Nome do campo
+		//aDados[2] -> Titulo
+		//aDados[3] -> Formato
+		//aDados[4] -> Valor/Conteudo
+
+		xDados := {}
+		//aadd(xDados,{""			,"Imagem",""})
+		aadd(xDados,{"B1_COD"	,RetTitle("B1_COD")		,"C",SB1->B1_COD })
+		aadd(xDados,{"B1_DESC"	,RetTitle("B1_DESC")	,"C",SB1->B1_DESC })
+		aadd(xDados,{"B1_TIPO"	,RetTitle("B1_TIPO")	,"C",SB1->B1_TIPO + " - " + POSICIONE("SX5",1,xFilial("SX5")+"02"+SB1->B1_TIPO,"X5_DESCRI") })
+		aadd(xDados,{"B1_UM"	,RetTitle("B1_UM")		,"C",SB1->B1_UM + " - " + POSICIONE("SAH",1,xFilial("SAH")+SB1->B1_UM,"AH_DESCPO") })
+		aadd(xDados,{"B1_LOCPAD",RetTitle("B1_LOCPAD")	,"C",SB1->B1_LOCPAD + " - " + POSICIONE("NNR",1,xFilial("NNR")+SB1->B1_LOCPAD,"NNR_DESCRI") })
+		aadd(xDados,{"B1_GRUPO"	,RetTitle("B1_GRUPO")	,"C",SB1->B1_GRUPO + " - " + POSICIONE("SBM",1,xFilial("SBM")+SB1->B1_GRUPO,"BM_DESC") })
+
+		oBrowse:SetDados( xDados )
+		oBrowse:SetTitle( "Resumo Produto" )
+
+	ENDIF
 	
 Return
 
