@@ -134,7 +134,8 @@ METHOD New() Class ClsINNWeb
 	//::cVersao	:= "1.0.0" //03/06/2022
 	//::cVersao	:= "1.0.1" //11/09/2025
 	//::cVersao	:= "1.0.2" //12/09/2025
-	::cVersao	:= "1.0.3" //15/09/2025
+	//::cVersao	:= "1.0.3" //15/09/2025
+	::cVersao	:= "1.0.4" //15/09/2025
 		
 	::cNomeApp	:= "INN web"
 	::cTitlePage:= "INNOVIOS"
