@@ -1,33 +1,25 @@
 #include "TOTVS.CH"
   
 User Function INNOpen(cPagina,cParm)
-
-	Local __oDlgOpen	:= nil
-	Local oWebEngine 	:= nil
+	
+	Local cTitulo		:= "Abertura de Páginas - INN Web"
 	Local cToken		:= Alltrim(GetMV("IN_TOKEN"))+RetCodUsr()
-	Local cURL 			:= Alltrim(GetMV("IN_SRVURL")) + "?x="+cPagina+"&simples=S&token="+cToken+"&"+cParm
+	Local cURLShl		:= Alltrim(GetMV("IN_SRVURL")) + "?x="+cPagina+"&simples=S&token="+cToken+"&"+cParm
 	
-	Local aObjects
-	Local aSize
-	Local aInfo
-	Local aPosObj
+	Local nMilissegundos := 10*1000 //30 segundos
 	
-	aObjects := {}
-	aSize    := MsAdvSize(.F.)
-	aSize[3] := aSize[3]*0.70//horizontal
-	aSize[5] := aSize[5]*0.70//horizontal
-	aSize[4] := aSize[4]*0.70//vertival
-	aSize[6] := aSize[6]*0.70//vertival
-	aInfo    := { aSize[ 1 ] , aSize[ 2 ] , aSize[ 3 ] , aSize[ 4 ] , 0 , 0 }
-	AAdd( aObjects, { 100, 100, .T. , .T. , } )
-	aPosObj  := MsObjSize( aInfo, aObjects )
+	Local _oDlgOpen, oSay1, oURL, oBtnFechar, oTimer := nil
 	
-	__oDlgOpen := MSDialog():New( aSize[7],aSize[1],aSize[6],aSize[5],"INNWeb",,,.F.,,,,,,.T.,,,.T. )
+	ShellExecute( "open", cURLShl , "", "", 1 )
 
-	oWebEngine := TWebEngine():New(__oDlgOpen,aSize[7],aSize[1],aSize[6],aSize[5])
-    oWebEngine:Align := CONTROL_ALIGN_ALLCLIENT
-	oWebEngine:navigate(cURL)
-	
-	__oDlgOpen:Activate(,,,.T.)
+	_oDlgOpen  := MSDialog():New( 265,349,397,814,cTitulo,,,.F.,,,,,,.T.,,,.T. )
+	oSay1      := TSay():New( 008,004,{||"Caso o browser padrão não abra automaticamente em 30 segundos utilize a url abaixo."},_oDlgOpen,,,.F.,.F.,.F.,.T.,CLR_BLACK,CLR_WHITE,250,008)
+	oURL       := TGet():New( 024,008,{|u| If(PCount()>0,cURLShl:=u,cURLShl)},_oDlgOpen,212,008,'',,CLR_BLACK,CLR_WHITE,,,,.T.,"",,,.F.,.F.,,.F.,.F.,"","cURLShl",,)
+	oBtnFechar := TButton():New( 040,008,"Fechar",_oDlgOpen,{|| _oDlgOpen:End() },037,012,,,,.T.,,"",,,,.F. )
+
+	oTimer := TTimer():New(nMilissegundos, {|| _oDlgOpen:End() }, _oDlgOpen )
+	oTimer:Activate()
+
+	_oDlgOpen:Activate(,,,.T.)
   
 Return

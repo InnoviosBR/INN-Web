@@ -5,6 +5,12 @@
 #include "tryexception.ch"
 #INCLUDE "INNLIB.CH"
 
+Web Function wIndex()
+
+Local cHtml += ExecInPage( "U_wIndex" )
+
+Return(cHtml)
+
 User Function wIndex()
 
 	Local cHtml 	:= ""
@@ -148,6 +154,7 @@ User Function wIndex()
 			//monta o html
 			oINNWeb:ExecMonta()		
 			cHtml := oINNWeb:cHTML
+			//HTTPSend(cHtml)
 
 			if lDebug
 				oINNLog:SetResponse(cHtml,200,.T.)
@@ -166,12 +173,15 @@ User Function wIndex()
 			RPCClearEnv()
 
 			TcInternal( 1, " INN web Sessao: FREE" )
+			conout("Numero de sessões HTTP no Application Server = "+str(HttpCountSession()))
+			HTTPFreeSession( )
 	
 		CATCH EXCEPTION USING oError
 		
 			conout(oError:ERRORSTACK)
 			
 			cHTML := fErroUsi(@oError,lDebug)
+			//HTTPSend(cHtml)
 			
 		END TRY
 		

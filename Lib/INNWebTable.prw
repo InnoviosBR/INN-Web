@@ -56,6 +56,7 @@ CLASS INNWebTable FROM ClsINNWeb
 	METHOD lengthMenu(  )
 	METHOD Setlength(  )
 	METHOD SetOrdem(  )
+	METHOD SetID(  )
 
 	METHOD GetCSV( )
 	METHOD GetJson( )
@@ -248,6 +249,9 @@ METHOD SetOrdem( xOrdem ) Class INNWebTable
 	::cOrdem := xOrdem
 Return
 
+METHOD SetID( xID ) Class INNWebTable
+	::cID := xID
+Return
 
 METHOD GetCSV( ) Class INNWebTable
 

@@ -132,7 +132,9 @@ METHOD New() Class ClsINNWeb
 		
 	::xInicio   := dTos(date())+" "+Time()
 	//::cVersao	:= "1.0.0" //03/06/2022
-	::cVersao	:= "1.0.1" //11/09/2025
+	//::cVersao	:= "1.0.1" //11/09/2025
+	//::cVersao	:= "1.0.2" //12/09/2025
+	::cVersao	:= "1.0.3" //15/09/2025
 		
 	::cNomeApp	:= "INN web"
 	::cTitlePage:= "INNOVIOS"
@@ -1236,7 +1238,11 @@ METHOD ExecMonta() Class ClsINNWeb
 		if ::lDebug
 			::cHTML += "<a class='github-fork-ribbon' href='https://innovios.com.br/wiki/index.php?search=INN+Web+debug' target='_black' data-ribbon='debug ativo' title='debug ativo'>debug ativo</a>" + CRLF
 		endif
+		
+
 		If !Empty(::cCodGgle)
+			/*
+			// Versão antiga
 			::cHTML += "<script>" + CRLF
 			::cHTML += " (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){" + CRLF
 			::cHTML += " (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o)," + CRLF
@@ -1245,7 +1251,18 @@ METHOD ExecMonta() Class ClsINNWeb
 			::cHTML += " ga('create', '"+::cCodGgle+"', 'auto');" + CRLF
 			::cHTML += " ga('send', 'pageview');" + CRLF
 			::cHTML += "</script>" + CRLF 
+			*/
+
+			::cHTML += "<!-- Google tag (gtag.js) -->" + CRLF
+			::cHTML += "<script async src='https://www.googletagmanager.com/gtag/js?id=G-"+::cCodGgle+"'></script>" + CRLF
+			::cHTML += "<script>" + CRLF
+			::cHTML += "  window.dataLayer = window.dataLayer || [];" + CRLF
+			::cHTML += "  function gtag(){dataLayer.push(arguments);}" + CRLF
+			::cHTML += "  gtag('js', new Date());" + CRLF
+			::cHTML += "  gtag('config', 'G-"+::cCodGgle+"');" + CRLF
+			::cHTML += "</script>" + CRLF
 		endif
+		
 
 		if !::lSimpPG
 			::cHTML += "<!-- .app -->" + CRLF 

@@ -320,4 +320,6 @@ Static Function fDetalhe(oINNWeb,xID)
 	oTableSE2:SimpleX3Table( "SE2",1," SE2->E2_FILIAL == '"+SF1->F1_FILIAL+"' .AND. SE2->E2_NUM == '"+SF1->F1_DOC+"' .AND. SE2->E2_PREFIXO == '"+SF1->F1_SERIE+"' .AND. SE2->E2_FORNECE == '"+SF1->F1_FORNECE+"'  .AND. SE2->E2_LOJA == '"+SF1->F1_LOJA+"' " )
 	oTableSE2:Setlength(.F.)
 
+	oINNWeb:RepArqs("SF1", SF1->F1_FILIAL + SF1->F1_DOC + SF1->F1_SERIE + SF1->F1_FORNECE + SF1->F1_LOJA )
+
 Return
